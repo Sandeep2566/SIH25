@@ -60,8 +60,8 @@ contract AgriTrace is AccessControl {
     event Sold(string batchId, address buyer, uint256 priceWei);
 
     modifier onlyProducer(string memory batchId) {
-        require(exists[batchId], "Batch doesn't exist");
-        require(batches[batchId].producer == msg.sender, "Not producer");
+        require(exists[batchId], "onlyProducer: Batch does not exist");
+        require(batches[batchId].producer == msg.sender, "onlyProducer: Caller is not the producer");
         _;
     }
 
@@ -72,7 +72,7 @@ contract AgriTrace is AccessControl {
         uint256 quantity,
         string calldata metadataCID
     ) external onlyRole(FARMER_ROLE) {
-        require(!exists[batchId], "Batch exists");
+    require(!exists[batchId], "createBatch: Batch already exists");
         Batch storage b = batches[batchId];
         b.batchId = batchId;
         b.producer = msg.sender;
@@ -87,13 +87,13 @@ contract AgriTrace is AccessControl {
     }
 
     function recordTransfer(string calldata batchId, address to, string calldata noteCID) external payable {
-        require(exists[batchId], "No batch");
+        require(exists[batchId], "recordTransfer: Batch does not exist");
         Batch storage b = batches[batchId];
         address prevOwner = (b.transfers.length == 0) ? b.producer : b.transfers[b.transfers.length-1].to;
-        require(msg.sender == prevOwner, "Not owner");
+        require(msg.sender == prevOwner, "recordTransfer: Caller is not the current owner");
         uint256 price = pendingPayments[batchId];
         if (price > 0) {
-            require(msg.value >= price, "Insufficient payment");
+            require(msg.value >= price, "recordTransfer: Insufficient payment sent");
             payable(prevOwner).transfer(price);
             if (msg.value > price) {
                 payable(msg.sender).transfer(msg.value - price);
@@ -106,15 +106,15 @@ contract AgriTrace is AccessControl {
     }
 
     function recordArrival(string calldata batchId) external {
-        require(exists[batchId], "No batch");
+        require(exists[batchId], "recordArrival: Batch does not exist");
         Batch storage b = batches[batchId];
         address currentOwner = (b.transfers.length == 0) ? b.producer : b.transfers[b.transfers.length-1].to;
-        require(msg.sender == currentOwner, "Not owner");
+        require(msg.sender == currentOwner, "recordArrival: Caller is not the current owner");
         b.status = Status.Arrived;
     }
 
     function postPrice(string calldata batchId, uint256 priceWei, string calldata noteCID) external onlyRole(DISTRIBUTOR_ROLE) {
-        require(exists[batchId], "No batch");
+        require(exists[batchId], "postPrice: Batch does not exist");
         Batch storage b = batches[batchId];
         b.prices.push(PriceRecord({setter: msg.sender, priceWei: priceWei, timestamp: block.timestamp, noteCID: noteCID}));
         pendingPayments[batchId] = priceWei;
@@ -122,11 +122,11 @@ contract AgriTrace is AccessControl {
     }
 
     function acceptPriceAndBuy(string calldata batchId, uint256 priceIndex) external payable {
-        require(exists[batchId], "No batch");
+        require(exists[batchId], "acceptPriceAndBuy: Batch does not exist");
         Batch storage b = batches[batchId];
-        require(priceIndex < b.prices.length, "bad index");
+        require(priceIndex < b.prices.length, "acceptPriceAndBuy: Invalid price index");
         PriceRecord memory pr = b.prices[priceIndex];
-        require(msg.value == pr.priceWei, "send exact amount");
+        require(msg.value == pr.priceWei, "acceptPriceAndBuy: Must send exact price amount");
         payable(pr.setter).transfer(msg.value);
         b.transfers.push(Transfer({from: pr.setter, to: msg.sender, timestamp: block.timestamp, noteCID: ""}));
         b.status = Status.Sold;
@@ -134,7 +134,7 @@ contract AgriTrace is AccessControl {
     }
 
     function recordQualityEvent(string calldata batchId, bool passed, string calldata reportCID, string calldata notes) external onlyRole(INSPECTOR_ROLE) {
-        require(exists[batchId], "No batch");
+        require(exists[batchId], "recordQualityEvent: Batch does not exist");
         Batch storage b = batches[batchId];
         b.qualityEvents.push(QualityEvent({inspector: msg.sender, timestamp: block.timestamp, reportCID: reportCID, passed: passed, notes: notes}));
         if(passed) {

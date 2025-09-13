@@ -3,6 +3,44 @@ import contract from '../blockchain/agritrace.js';
 
 const router = express.Router();
 
+// Post a price for a batch on the blockchain
+router.post('/actions/price', async (req, res) => {
+  try {
+    const { batchId, priceWei, noteCID } = req.body;
+    // Call the smart contract function
+    const tx = await contract.postPrice(batchId, priceWei, noteCID);
+    await tx.wait();
+    res.json({ success: true, txHash: tx.hash });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Record transfer
+router.post('/actions/transfer', async (req, res) => {
+  try {
+    const { batchId, to, noteCID } = req.body;
+    const tx = await contract.recordTransfer(batchId, to, noteCID);
+    await tx.wait();
+    res.json({ success: true, txHash: tx.hash });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Record a quality event on the blockchain
+router.post('/actions/quality', async (req, res) => {
+  try {
+    const { batchId, passed, reportCID, notes } = req.body;
+    // Call the smart contract function
+    const tx = await contract.recordQualityEvent(batchId, passed, reportCID, notes);
+    await tx.wait();
+    res.json({ success: true, txHash: tx.hash });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Create a new batch on blockchain
 router.post('/createBatch', async (req, res) => {
   try {

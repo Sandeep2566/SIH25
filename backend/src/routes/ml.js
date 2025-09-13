@@ -1,3 +1,10 @@
+
+import express from 'express';
+import axios from 'axios';
+
+const router = express.Router();
+const ML_BASE = 'http://localhost:8000';
+
 // Automated feature extraction for a batch
 router.get('/predict-price-for-batch/:batchId', async (req, res) => {
   try {
@@ -48,11 +55,6 @@ router.get('/detect-quality-anomaly-for-batch/:batchId', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-import express from 'express';
-import axios from 'axios';
-
-const router = express.Router();
-const ML_BASE = 'http://localhost:8000';
 
 // Predict price
 router.post('/predict-price', async (req, res) => {

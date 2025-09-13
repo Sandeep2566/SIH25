@@ -1,5 +1,4 @@
 import mlRoutes from './routes/ml.js';
-app.use('/api/ml', mlRoutes);
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -17,7 +16,8 @@ app.use(express.json());
 app.use('/api/roles', rolesRoutes);
 app.use('/api/produce', produceRoutes);
 app.use('/api/blockchain', blockchainRoutes);
-app.use('/api/blockchain/actions', blockchainActions);
+
+app.use('/api/ml', mlRoutes);
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/agritrace';
