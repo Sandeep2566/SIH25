@@ -1,3 +1,5 @@
+import mlRoutes from './routes/ml.js';
+app.use('/api/ml', mlRoutes);
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';

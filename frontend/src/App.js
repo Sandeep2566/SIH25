@@ -1,3 +1,5 @@
+import BatchMLAnalytics from './components/BatchMLAnalytics';
+import MLAnalytics from './components/MLAnalytics';
 import RoleManager from './components/RoleManager';
 import React, { useEffect, useState } from 'react';
 import BatchForm from './components/BatchForm';
@@ -26,7 +28,9 @@ function App() {
         <BatchDetails />
         <TransferForm />
         <PriceQualityForm />
-        <RoleManager />
+  <RoleManager />
+  <MLAnalytics />
+  <BatchMLAnalytics />
       </>}
       <TraceabilityView initialBatchId={qrBatchId} />
     </div>
