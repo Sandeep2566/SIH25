@@ -126,4 +126,43 @@ contract AgriTrace {
         }
         emit QualityRecorded(batchId, msg.sender, passed);
     }
+    // --- Traceability View Functions ---
+    function getBatch(string calldata batchId) external view returns (
+        string memory,
+        address,
+        string memory,
+        uint256,
+        uint8,
+        string memory,
+        uint256
+    ) {
+        Batch storage b = batches[batchId];
+        return (
+            b.batchId,
+            b.producer,
+            b.originGeo,
+            b.createdAt,
+            uint8(b.status),
+            b.productType,
+            b.quantity
+        );
+    }
+
+    function getTransfers(string calldata batchId) external view returns (
+        Transfer[] memory
+    ) {
+        return batches[batchId].transfers;
+    }
+
+    function getQualityEvents(string calldata batchId) external view returns (
+        QualityEvent[] memory
+    ) {
+        return batches[batchId].qualityEvents;
+    }
+
+    function getPrices(string calldata batchId) external view returns (
+        PriceRecord[] memory
+    ) {
+        return batches[batchId].prices;
+    }
 }
