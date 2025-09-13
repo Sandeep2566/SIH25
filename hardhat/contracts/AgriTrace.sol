@@ -1,7 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
 
-contract AgriTrace {
+pragma solidity ^0.8.19;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
+contract AgriTrace is AccessControl {
+    bytes32 public constant FARMER_ROLE = keccak256("FARMER_ROLE");
+    bytes32 public constant INSPECTOR_ROLE = keccak256("INSPECTOR_ROLE");
+    bytes32 public constant DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR_ROLE");
+    bytes32 public constant RETAILER_ROLE = keccak256("RETAILER_ROLE");
+    mapping(string => uint256) public pendingPayments;
+    constructor() {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
     enum Status { Created, Packed, InTransit, Arrived, QualityChecked, Sold, Disputed }
 
     struct Transfer {
@@ -61,7 +71,7 @@ contract AgriTrace {
         string calldata productType,
         uint256 quantity,
         string calldata metadataCID
-    ) external {
+    ) external onlyRole(FARMER_ROLE) {
         require(!exists[batchId], "Batch exists");
         Batch storage b = batches[batchId];
         b.batchId = batchId;
@@ -76,11 +86,20 @@ contract AgriTrace {
         emit BatchCreated(batchId, msg.sender);
     }
 
-    function recordTransfer(string calldata batchId, address to, string calldata noteCID) external {
+    function recordTransfer(string calldata batchId, address to, string calldata noteCID) external payable {
         require(exists[batchId], "No batch");
         Batch storage b = batches[batchId];
-        address currentOwner = (b.transfers.length == 0) ? b.producer : b.transfers[b.transfers.length-1].to;
-        require(msg.sender == currentOwner || msg.sender == b.producer, "Not owner");
+        address prevOwner = (b.transfers.length == 0) ? b.producer : b.transfers[b.transfers.length-1].to;
+        require(msg.sender == prevOwner, "Not owner");
+        uint256 price = pendingPayments[batchId];
+        if (price > 0) {
+            require(msg.value >= price, "Insufficient payment");
+            payable(prevOwner).transfer(price);
+            if (msg.value > price) {
+                payable(msg.sender).transfer(msg.value - price);
+            }
+            pendingPayments[batchId] = 0;
+        }
         b.transfers.push(Transfer({from: msg.sender, to: to, timestamp: block.timestamp, noteCID: noteCID}));
         b.status = Status.InTransit;
         emit TransferRecorded(batchId, msg.sender, to);
@@ -94,12 +113,11 @@ contract AgriTrace {
         b.status = Status.Arrived;
     }
 
-    function postPrice(string calldata batchId, uint256 priceWei, string calldata noteCID) external {
+    function postPrice(string calldata batchId, uint256 priceWei, string calldata noteCID) external onlyRole(DISTRIBUTOR_ROLE) {
         require(exists[batchId], "No batch");
         Batch storage b = batches[batchId];
-        address currentOwner = (b.transfers.length == 0) ? b.producer : b.transfers[b.transfers.length-1].to;
-        require(msg.sender == currentOwner, "Not owner");
         b.prices.push(PriceRecord({setter: msg.sender, priceWei: priceWei, timestamp: block.timestamp, noteCID: noteCID}));
+        pendingPayments[batchId] = priceWei;
         emit PricePosted(batchId, priceWei);
     }
 
@@ -115,7 +133,7 @@ contract AgriTrace {
         emit Sold(batchId, msg.sender, pr.priceWei);
     }
 
-    function recordQualityEvent(string calldata batchId, bool passed, string calldata reportCID, string calldata notes) external {
+    function recordQualityEvent(string calldata batchId, bool passed, string calldata reportCID, string calldata notes) external onlyRole(INSPECTOR_ROLE) {
         require(exists[batchId], "No batch");
         Batch storage b = batches[batchId];
         b.qualityEvents.push(QualityEvent({inspector: msg.sender, timestamp: block.timestamp, reportCID: reportCID, passed: passed, notes: notes}));

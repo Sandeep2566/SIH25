@@ -1,3 +1,4 @@
+import RoleManager from './components/RoleManager';
 import React, { useEffect, useState } from 'react';
 import BatchForm from './components/BatchForm';
 import BatchDetails from './components/BatchDetails';
@@ -25,6 +26,7 @@ function App() {
         <BatchDetails />
         <TransferForm />
         <PriceQualityForm />
+        <RoleManager />
       </>}
       <TraceabilityView initialBatchId={qrBatchId} />
     </div>
