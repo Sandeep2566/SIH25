@@ -7,6 +7,7 @@ import rolesRoutes from './routes/roles.js';
 import produceRoutes from './routes/produce.js';
 import blockchainRoutes from './routes/blockchain.js';
 import blockchainActions from './routes/blockchainActions.js';
+import authRoutes from './routes/auth.routes.js'; 
 
 dotenv.config();
 
@@ -18,6 +19,8 @@ app.use('/api/produce', produceRoutes);
 app.use('/api/blockchain', blockchainRoutes);
 
 app.use('/api/ml', mlRoutes);
+
+app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/agritrace';
