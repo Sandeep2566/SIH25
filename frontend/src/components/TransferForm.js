@@ -20,17 +20,28 @@ function TransferForm() {
   };
 
   return (
-    <div style={{ marginTop: 30 }}>
-      <h2>Transfer Batch Ownership</h2>
-      <form onSubmit={handleSubmit}>
-        <input name="batchId" placeholder="Batch ID" value={form.batchId} onChange={handleChange} required />
-        <input name="to" placeholder="To (address)" value={form.to} onChange={handleChange} required />
-        <input name="noteCID" placeholder="Note CID (optional)" value={form.noteCID} onChange={handleChange} />
-        <button type="submit">Transfer</button>
+    <div>
+      <h3 className="form-section-title">Transfer Ownership</h3>
+      <form onSubmit={handleSubmit} className="form-grid gap-4">
+        <div className="form-field">
+          <label className="form-label">Batch ID</label>
+          <input className="form-input" name="batchId" placeholder="Batch ID" value={form.batchId} onChange={handleChange} required />
+        </div>
+        <div className="form-field">
+          <label className="form-label">Recipient Address</label>
+          <input className="form-input" name="to" placeholder="0x..." value={form.to} onChange={handleChange} required />
+        </div>
+        <div className="form-field">
+          <label className="form-label">Note CID (optional)</label>
+          <input className="form-input" name="noteCID" placeholder="Optional IPFS CID" value={form.noteCID} onChange={handleChange} />
+        </div>
+        <div className="form-actions">
+          <button type="submit" className="form-button">Record Transfer</button>
+        </div>
       </form>
       {result && (
-        <div style={{ marginTop: 10 }}>
-          {result.error ? <span style={{ color: 'red' }}>{result.error}</span> : <span>Success! Tx: {result.txHash}</span>}
+        <div className="mt-3">
+          {result.error ? <span className="result-error">{result.error}</span> : <span className="result-success">Success • Tx: {result.txHash}</span>}
         </div>
       )}
     </div>

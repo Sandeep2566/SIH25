@@ -30,28 +30,58 @@ function PriceQualityForm() {
   };
 
   return (
-    <div style={{ marginTop: 30 }}>
-      <h2>Add Price or Quality Event</h2>
-      <form onSubmit={handlePrice} style={{ marginBottom: 10 }}>
-        <input name="batchId" placeholder="Batch ID" value={form.batchId} onChange={handleChange} required />
-        <input name="priceWei" placeholder="Price (Wei)" value={form.priceWei} onChange={handleChange} required />
-        <input name="noteCID" placeholder="Note CID (optional)" value={form.noteCID} onChange={handleChange} />
-        <button type="submit">Add Price</button>
+    <div>
+      <h3 className="form-section-title">Price & Quality Events</h3>
+      <form onSubmit={handlePrice} className="space-y-4 mb-6">
+        <div className="form-grid two">
+          <div className="form-field">
+            <label className="form-label">Batch ID</label>
+            <input className="form-input" name="batchId" value={form.batchId} onChange={handleChange} required />
+          </div>
+          <div className="form-field">
+            <label className="form-label">Price (Wei)</label>
+            <input className="form-input" name="priceWei" value={form.priceWei} onChange={handleChange} placeholder="e.g. 1000000000000" required />
+          </div>
+          <div className="form-field col-span-2">
+            <label className="form-label">Note CID (optional)</label>
+            <input className="form-input" name="noteCID" value={form.noteCID} onChange={handleChange} placeholder="Optional IPFS CID" />
+          </div>
+        </div>
+        <div className="form-actions">
+          <button type="submit" className="form-button">Add Price</button>
+        </div>
       </form>
-      <form onSubmit={handleQuality}>
-        <input name="batchId" placeholder="Batch ID" value={form.batchId} onChange={handleChange} required />
-        <select name="passed" value={form.passed} onChange={handleChange} required>
-          <option value="">Quality Passed?</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-        <input name="reportCID" placeholder="Report CID (optional)" value={form.reportCID} onChange={handleChange} />
-        <input name="notes" placeholder="Notes (optional)" value={form.notes} onChange={handleChange} />
-        <button type="submit">Add Quality Event</button>
+      <div className="divider" />
+      <form onSubmit={handleQuality} className="space-y-4">
+        <div className="form-grid two">
+          <div className="form-field">
+            <label className="form-label">Batch ID</label>
+            <input className="form-input" name="batchId" value={form.batchId} onChange={handleChange} required />
+          </div>
+          <div className="form-field">
+            <label className="form-label">Passed?</label>
+            <select className="form-select" name="passed" value={form.passed} onChange={handleChange} required>
+              <option value="">Select</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+          <div className="form-field col-span-2">
+            <label className="form-label">Report CID (optional)</label>
+            <input className="form-input" name="reportCID" value={form.reportCID} onChange={handleChange} />
+          </div>
+          <div className="form-field col-span-2">
+            <label className="form-label">Notes (optional)</label>
+            <input className="form-input" name="notes" value={form.notes} onChange={handleChange} />
+          </div>
+        </div>
+        <div className="form-actions">
+          <button type="submit" className="form-button">Add Quality Event</button>
+        </div>
       </form>
       {result && (
-        <div style={{ marginTop: 10 }}>
-          {result.error ? <span style={{ color: 'red' }}>{result.error}</span> : <span>Success! Tx: {result.txHash}</span>}
+        <div className="mt-3">
+          {result.error ? <span className="result-error">{result.error}</span> : <span className="result-success">Success • Tx: {result.txHash}</span>}
         </div>
       )}
     </div>

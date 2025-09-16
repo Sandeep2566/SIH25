@@ -27,18 +27,37 @@ function BatchForm() {
 
   return (
     <div>
-      <h2>Create Produce Batch (Blockchain)</h2>
-      <form onSubmit={handleSubmit}>
-        <input name="batchId" placeholder="Batch ID" value={form.batchId} onChange={handleChange} required />
-        <input name="originGeo" placeholder="Origin (Geo)" value={form.originGeo} onChange={handleChange} required />
-        <input name="productType" placeholder="Product Type" value={form.productType} onChange={handleChange} required />
-        <input name="quantity" placeholder="Quantity" type="number" value={form.quantity} onChange={handleChange} required />
-        <input name="metadataCID" placeholder="Metadata CID" value={form.metadataCID} onChange={handleChange} />
-        <button type="submit">Create Batch</button>
+      <h3 className="form-section-title">Create Produce Batch</h3>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="form-grid two">
+          <div className="form-field">
+            <label className="form-label">Batch ID</label>
+            <input className="form-input" name="batchId" placeholder="e.g. BATCH-1001" value={form.batchId} onChange={handleChange} required />
+          </div>
+          <div className="form-field">
+            <label className="form-label">Origin (Geo)</label>
+            <input className="form-input" name="originGeo" placeholder="State / Region" value={form.originGeo} onChange={handleChange} required />
+          </div>
+          <div className="form-field">
+            <label className="form-label">Product Type</label>
+            <input className="form-input" name="productType" placeholder="Commodity name" value={form.productType} onChange={handleChange} required />
+          </div>
+          <div className="form-field">
+            <label className="form-label">Quantity</label>
+            <input className="form-input" name="quantity" placeholder="e.g. 500" type="number" value={form.quantity} onChange={handleChange} required />
+          </div>
+          <div className="form-field col-span-2">
+            <label className="form-label">Metadata CID</label>
+            <input className="form-input" name="metadataCID" placeholder="Optional IPFS CID" value={form.metadataCID} onChange={handleChange} />
+          </div>
+        </div>
+        <div className="form-actions">
+          <button type="submit" className="form-button">Create Batch</button>
+        </div>
       </form>
       {result && (
-        <div style={{ marginTop: 10 }}>
-          {result.error ? <span style={{ color: 'red' }}>{result.error}</span> : <span>Success! Tx: {result.txHash}</span>}
+        <div className="mt-3">
+          {result.error ? <span className="result-error">{result.error}</span> : <span className="result-success">Success • Tx: {result.txHash}</span>}
         </div>
       )}
     </div>

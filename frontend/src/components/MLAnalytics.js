@@ -31,7 +31,8 @@ function MLAnalytics() {
 
   return (
     <div style={{ marginTop: 30 }}>
-      <h2>AI/ML Analytics</h2>
+  <h2 style={{fontSize:'1.75rem', fontWeight:800, color:'#065f46', marginBottom: '0.35rem'}}>Predictive Quality & Pricing Intelligence</h2>
+  <p style={{marginTop:0, marginBottom:'1rem', maxWidth:480, fontSize:'.9rem', lineHeight:1.4, color:'#4b5563'}}>Embedded models surface classification, anomaly and pricing signals for real‑time decisioning.</p>
       <div>
         <input value={features} onChange={e => setFeatures(e.target.value)} placeholder="Comma-separated features (e.g. 0.5,1.2,0.8)" style={{ width: 300 }} />
         <button onClick={handlePredict}>Predict Price</button>

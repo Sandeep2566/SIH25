@@ -36,7 +36,8 @@ function BatchMLAnalytics() {
 
   return (
     <div style={{ marginTop: 30 }}>
-      <h2>Batch AI/ML Analytics (Auto Feature Extraction)</h2>
+  <h2 style={{fontSize:'1.65rem', fontWeight:800, color:'#065f46', marginBottom:'0.35rem'}}>Bulk Insight Acceleration</h2>
+  <p style={{marginTop:0, marginBottom:'0.9rem', maxWidth:520, fontSize:'.85rem', lineHeight:1.4, color:'#4b5563'}}>Automated feature extraction and multi‑batch scoring to scale analytical coverage.</p>
       <input value={batchId} onChange={e => setBatchId(e.target.value)} placeholder="Batch ID" style={{ width: 200 }} />
       <button onClick={handlePredict}>Predict Price</button>
       <button onClick={handleAnomaly}>Detect Quality Anomaly</button>

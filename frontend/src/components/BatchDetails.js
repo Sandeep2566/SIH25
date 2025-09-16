@@ -19,15 +19,20 @@ function BatchDetails() {
   };
 
   return (
-    <div style={{ marginTop: 30 }}>
-      <h2>View Batch Details (Blockchain)</h2>
-      <form onSubmit={handleFetch}>
-        <input value={batchId} onChange={e => setBatchId(e.target.value)} placeholder="Batch ID" required />
-        <button type="submit">Fetch</button>
+    <div>
+      <h3 className="form-section-title">View Batch Details</h3>
+      <form onSubmit={handleFetch} className="form-grid two items-end">
+        <div className="form-field col-span-2">
+          <label className="form-label">Batch ID</label>
+            <input className="form-input" value={batchId} onChange={e => setBatchId(e.target.value)} placeholder="Enter Batch ID" required />
+        </div>
+        <div className="form-actions">
+          <button type="submit" className="form-button">Fetch</button>
+        </div>
       </form>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
+      {error && <div className="result-error mt-2">{error}</div>}
       {batch && (
-        <div style={{ marginTop: 10 }}>
+        <div className="json-preview">
           <pre>{JSON.stringify(batch, null, 2)}</pre>
         </div>
       )}
